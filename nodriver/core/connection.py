@@ -429,13 +429,15 @@ class Connection(metaclass=CantTouchThis):
             self.mapper.update({tx.id: tx})
             if not _is_update:
                 await self._register_handlers()
+            print("CDP: send message (" + str(tx.id) + "): " + json.dumps(tx.message), flush = True)
             await self.websocket.send(tx.message)
             try:
                 return await tx
             except ProtocolException as e:
                 e.message += f"\ncommand:{tx.method}\nparams:{tx.params}"
                 raise e
-        except Exception:
+        except Exception as e :
+            print("CDP: error: " + str(e), flush = True)
             await self.aclose()
 
     #
@@ -601,11 +603,13 @@ class Listener:
                     self.connection.websocket.recv(), self.time_before_considered_idle
                 )
             except asyncio.TimeoutError:
+                print("CDP: recv timeout", flush = True)
                 self.idle.set()
                 # breathe
                 # await asyncio.sleep(self.time_before_considered_idle / 10)
                 continue
             except (Exception,) as e:
+                print("CDP: recv error: " + str(e), flush = True)
                 # break on any other exception
                 # which is mostly socket is closed or does not exist
                 # or is not allowed
@@ -624,6 +628,7 @@ class Listener:
             self.idle.clear()
 
             message = json.loads(msg)
+            print("CDP: got message: " + json.dumps(message), flush = True)
             if "id" in message:
                 # response to our command
                 if message["id"] in self.connection.mapper:
