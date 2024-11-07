@@ -349,6 +349,12 @@ class Browser:
                 break
 
         if not self.info:
+            stderr = None
+            try :
+                _, stderr_bytes = await self._process.communicate()
+                stderr = stderr_bytes.decode()[:1000]
+            except Exception :
+                pass
             raise Exception(
                 (
                     """
@@ -357,7 +363,8 @@ class Browser:
                 ---------------------
                 One of the causes could be when you are running as root.
                 In that case you need to pass no_sandbox=True 
-                """
+                """ +
+                ("Browser error output:" + stderr if stderr else '')
                 )
             )
 
