@@ -34,6 +34,8 @@ TargetType = Union[cdp.target.TargetInfo, cdp.target.TargetID]
 
 logger = logging.getLogger("uc.connection")
 
+class SendException(Exception):
+    pass
 
 class ProtocolException(Exception):
     def __init__(self, *args, **kwargs):  # real signature unknown
@@ -429,15 +431,17 @@ class Connection(metaclass=CantTouchThis):
             self.mapper.update({tx.id: tx})
             if not _is_update:
                 await self._register_handlers()
-            print("CDP: send message (" + str(tx.id) + "): " + json.dumps(tx.message), flush = True)
             await self.websocket.send(tx.message)
             try:
                 return await tx
             except ProtocolException as e:
                 e.message += f"\ncommand:{tx.method}\nparams:{tx.params}"
                 raise e
+        except ProtocolException :
+            raise
         except Exception as e :
-            print("CDP: error: " + str(e), flush = True)
+            raise SendException("Failed to send command: " + str(e))
+        finally :
             await self.aclose()
 
     #
@@ -603,18 +607,16 @@ class Listener:
                     self.connection.websocket.recv(), self.time_before_considered_idle
                 )
             except asyncio.TimeoutError:
-                print("CDP: recv timeout", flush = True)
                 self.idle.set()
                 # breathe
                 # await asyncio.sleep(self.time_before_considered_idle / 10)
                 continue
             except (Exception,) as e:
-                print("CDP: recv error: " + str(e), flush = True)
                 # break on any other exception
                 # which is mostly socket is closed or does not exist
                 # or is not allowed
 
-                logger.debug(
+                logger.error(
                     "connection listener exception while reading websocket:\n%s", e
                 )
                 break
@@ -697,7 +699,10 @@ class Listener:
                             raise
                 except asyncio.CancelledError:
                     break
-                except Exception:
+                except Exception as e:
+                    logger.error(
+                        "listener loop interrupted with exception:\n%s", e
+                    )
                     raise
                 continue
 
