@@ -431,6 +431,7 @@ class Connection(metaclass=CantTouchThis):
             self.mapper.update({tx.id: tx})
             if not _is_update:
                 await self._register_handlers()
+            print("CDP: send message (" + str(tx.id) + "): " + json.dumps(tx.message), flush = True)
             await self.websocket.send(tx.message)
             try:
                 return await tx
@@ -544,6 +545,7 @@ class Connection(metaclass=CantTouchThis):
         tx.connection = self
         tx.id = -2
         self.mapper.update({tx.id: tx})
+        print("CDP: send oneshot message (" + str(tx.id) + "): " + json.dumps(tx.message), flush = True)
         await self.websocket.send(tx.message)
         try:
             # in try except since if browser connection sends this it reises an exception
