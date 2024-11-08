@@ -9,6 +9,7 @@ import json
 import logging
 import sys
 import types
+import traceback
 from asyncio import iscoroutine, iscoroutinefunction
 from typing import (
     Generator,
@@ -439,6 +440,7 @@ class Connection(metaclass=CantTouchThis):
                 e.message += f"\ncommand:{tx.method}\nparams:{tx.params}\nsent_message:{tx.message}"
                 raise e
         except ProtocolException :
+            print("============= nodriver ===============\n" + traceback.format_exc() + "\n======================", flush=True)
             raise
         except Exception as e :
             raise SendException("Failed to send command: " + str(e))
