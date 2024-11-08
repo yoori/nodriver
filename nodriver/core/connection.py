@@ -435,7 +435,7 @@ class Connection(metaclass=CantTouchThis):
             try:
                 return await tx
             except ProtocolException as e:
-                e.message += f"\ncommand:{tx.method}\nparams:{tx.params}"
+                e.message += f"\ncommand:{tx.method}\nparams:{tx.params}\nsent_message:{tx.message}"
                 raise e
         except ProtocolException :
             raise
