@@ -226,9 +226,7 @@ class Connection(metaclass=CantTouchThis):
 
     @property
     def closed(self):
-        if not self.websocket:
-            return True
-        return self.websocket.closed
+        return (not self.websocket)
 
     def add_handler(
         self,
@@ -280,7 +278,7 @@ class Connection(metaclass=CantTouchThis):
         :return:
         """
 
-        if not self.websocket or self.websocket.closed:
+        if not self.websocket:
             try:
                 self.websocket = await websockets.connect(
                     self.websocket_url,
@@ -306,11 +304,12 @@ class Connection(metaclass=CantTouchThis):
         """
         closes the websocket connection. should not be called manually by users.
         """
-        if self.websocket and not self.websocket.closed:
+        if self.websocket:
             if self.listener and self.listener.running:
                 self.listener.cancel()
                 self.enabled_domains.clear()
             await self.websocket.close()
+            self.websocket = None
             logger.debug("\n❌ closed websocket connection to %s", self.websocket_url)
 
     async def sleep(self, t: Union[int, float] = 0.25):
@@ -409,7 +408,7 @@ class Connection(metaclass=CantTouchThis):
         :return:
         """
         await self.aopen()
-        if not self.websocket or self.closed:
+        if not self.websocket:
             return
         if self._owner:
             browser = self._owner

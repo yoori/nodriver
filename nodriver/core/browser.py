@@ -717,8 +717,6 @@ class CookieJar:
         #     return
         # if not connection.websocket:
         #     return
-        # if connection.websocket.closed:
-        #     return
         cookies = await self.get_all(requests_cookie_format=False)
         included_cookies = []
         for cookie in cookies:
