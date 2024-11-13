@@ -267,6 +267,12 @@ class Browser:
         await connection.sleep(0.25)
         return connection
 
+    async def get_outputs(self):
+        if self._process:
+            stdout_bytes, stderr_bytes = await self._process.communicate()
+            return [stdout_bytes, stderr_bytes]
+        return None
+
     async def start(self=None) -> Browser:
         """launches the actual browser"""
         if not self:
