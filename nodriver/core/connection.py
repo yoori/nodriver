@@ -636,12 +636,16 @@ class Listener:
                 # since we are at this point, we are not "idle" anymore.
                 self.idle.clear()
 
-                logger.debug("listener_loop, got CDP message: " + json.dumps(msg))
+                logger.debug(
+                    "listener_loop, got CDP message(" +
+                    (message['id'] if 'id' in message else '') + "): " +
+                    json.dumps(msg)[:200]
+                )
                 message = json.loads(msg)
-                logger.debug("listener_loop, got CDP message parsed: " + json.dumps(msg))
+                logger.debug("listener_loop, got CDP message parsed")
                 if "id" in message:
                     # response to our command
-                    logger.debug("listener_loop, to find CDP message by id: " + str(message["id"]))
+                    logger.debug("listener_loop, to find CDP message(" + str(message["id"]) + ")")
                     if message["id"] in self.connection.mapper:
                         logger.debug("listener_loop, CDP found")
                         # get the corresponding Transaction
