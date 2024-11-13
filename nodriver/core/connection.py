@@ -637,11 +637,14 @@ class Listener:
                 self.idle.clear()
 
                 logger.debug(
-                    "listener_loop, got CDP message(" +
+                    "listener_loop, got CDP message: " + json.dumps(msg)[:200]
+                )
+                message = json.loads(msg)
+                logger.debug(
+                    "listener_loop, got parsed CDP message(" +
                     (message['id'] if 'id' in message else '') + "): " +
                     json.dumps(msg)[:200]
                 )
-                message = json.loads(msg)
                 logger.debug("listener_loop, got CDP message parsed")
                 if "id" in message:
                     # response to our command
