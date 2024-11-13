@@ -642,7 +642,7 @@ class Listener:
                 message = json.loads(msg)
                 logger.debug(
                     "listener_loop, got parsed CDP message(" +
-                    (message['id'] if 'id' in message else '') + "): " +
+                    (str(message['id']) if 'id' in message else '') + "): " +
                     json.dumps(msg)[:200]
                 )
                 logger.debug("listener_loop, got CDP message parsed")
