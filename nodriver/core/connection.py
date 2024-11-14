@@ -428,7 +428,10 @@ class Connection(metaclass=CantTouchThis):
             self.mapper.update({tx.id: tx})
             if not _is_update:
                 await self._register_handlers()
-            logger.debug("send CDP message (" + str(tx.id) + "): " + json.dumps(tx.message))
+            logger.debug(
+                "send CDP message (" + str(tx.id) + ") on (" + str(id(self)) + "): " +
+                json.dumps(tx.message)
+            )
             await self.websocket.send(tx.message)
             try:
                 try:
