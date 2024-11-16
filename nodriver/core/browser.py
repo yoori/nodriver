@@ -589,6 +589,8 @@ class Browser:
                 logger.info(
                     "terminated browser with pid %d successfully" % self._process.pid
                 )
+                self._process = None
+                self._process_pid = None
                 break
             except (Exception,):
                 try:
@@ -596,6 +598,8 @@ class Browser:
                     logger.info(
                         "killed browser with pid %d successfully" % self._process.pid
                     )
+                    self._process = None
+                    self._process_pid = None
                     break
                 except (Exception,):
                     try:
@@ -605,6 +609,8 @@ class Browser:
                                 "killed browser with pid %d using signal 15 successfully"
                                 % self._process.pid
                             )
+                            self._process = None
+                            self._process_pid = None
                             break
                     except (TypeError,):
                         logger.info("typerror", exc_info=True)
@@ -619,8 +625,6 @@ class Browser:
                         pass
                     except (Exception,):
                         raise
-            self._process = None
-            self._process_pid = None
 
     def __await__(self):
         # return ( asyncio.sleep(0)).__await__()

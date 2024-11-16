@@ -383,7 +383,7 @@ class Element:
         try:
             return self.remote_object.object_id
         except AttributeError:
-            pass
+            logger.debug("object_id: AttributeError")
 
     async def click(self):
         """
@@ -562,7 +562,7 @@ class Element:
         try:
             await self.flash()
         except:  # noqa
-            pass
+            logger.exception('Caught an error')
 
     async def mouse_move(self):
         """moves mouse (not click), to element position. when an element has an
