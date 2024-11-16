@@ -2156,3 +2156,13 @@ class ShadowRootPushed:
         return cls(
             host_id=NodeId.from_json(json["hostId"]), root=Node.from_json(json["root"])
         )
+
+@event_class("DOM.scrollableFlagUpdated")
+@dataclass
+class ScrollableFlagUpdated:
+    """
+    """
+
+    @classmethod
+    def from_json(cls, json: T_JSON_DICT) -> ScrollableFlagUpdated:
+        return cls()
