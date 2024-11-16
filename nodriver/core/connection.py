@@ -422,8 +422,6 @@ class Connection(metaclass=CantTouchThis):
         try:
             tx = Transaction(cdp_obj)
             tx.connection = self
-            if not self.mapper:
-                self.__count__ = itertools.count(0)
             tx.id = next(self.__count__)
             self.mapper.update({tx.id: tx})
             if not _is_update:
@@ -675,8 +673,6 @@ class Listener:
                     try:
                         event = cdp.util.parse_json_event(message)
                         event_tx = EventTransaction(event)
-                        if not self.connection.mapper:
-                            self.connection.__count__ = itertools.count(0)
                         event_tx.id = next(self.connection.__count__)
                         self.connection.mapper[event_tx.id] = event_tx
                     except Exception as e:
