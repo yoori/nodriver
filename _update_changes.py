@@ -1,5 +1,6 @@
 from pathlib import Path
 import re
+import logging
 from packaging.version import Version
 
 
@@ -32,7 +33,7 @@ def find_replace_in_file(file, search, repl):
             search = search.encode()
             repl = repl.encode()
         except:
-            pass
+            logging.exception('Caught an error')
         file.write_bytes(re.sub(search, repl, content))
     else:
         file.write_text(re.sub(search, repl, content))

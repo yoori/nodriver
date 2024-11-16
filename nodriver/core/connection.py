@@ -148,8 +148,10 @@ class EventTransaction(Transaction):
     def __init__(self, event_object):
         try:
             super().__init__(None)
-        except:
+        except TypeError:
             pass
+        except Exception as e:
+            logger.exception("Caught an error")
         self.set_result(event_object)
         self.event = self.value = self.result()
 
@@ -441,7 +443,7 @@ class Connection(metaclass=CantTouchThis):
                 e.message += f"\ncommand:{tx.method}\nparams:{tx.params}"
                 raise e
         except Exception as e:
-            logger.error("send CDP message error: " + str(e))
+            logger.exception("send CDP message error")
             await self.aclose()
 
     #
@@ -548,8 +550,8 @@ class Connection(metaclass=CantTouchThis):
         try:
             # in try except since if browser connection sends this it reises an exception
             return await tx
-        except ProtocolException:
-            pass
+        except ProtocolException as e:
+            logger.exception("_send_oneshot: ProtocolException")
 
 
 class Listener:
@@ -623,8 +625,8 @@ class Listener:
                     # break on any other exception
                     # which is mostly socket is closed or does not exist
                     # or is not allowed
-                    logger.error(
-                        "connection listener exception while reading websocket:\n%s", e
+                    logger.exception(
+                        "connection listener exception while reading websocket"
                     )
                     break
                 finally:
@@ -721,7 +723,7 @@ class Listener:
                     continue
                 await asyncio.sleep(0.1) # Switch to execute other coroutines.
         except Exception as e:
-            logger.error("listener_loop, exception: " + str(e))
+            logger.exception("listener_loop, exception")
 
     def __repr__(self):
         s_idle = "[idle]" if self.idle.is_set() else "[busy]"
