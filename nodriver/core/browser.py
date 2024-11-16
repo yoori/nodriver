@@ -121,6 +121,10 @@ class Browser:
         logger.debug("Session object initialized: %s" % vars(self))
 
     @property
+    def process_pid(self):
+        return self._process_pid
+
+    @property
     def websocket_url(self):
         return self.info.webSocketDebuggerUrl
 
